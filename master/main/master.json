@@ -3,5 +3,5 @@
   "apiReadTimeout":5000,
   "apiWriteTimeout":5000,
   "etcdDialTimeout":5000,
-  "etcdEndpoints":"etcd.10.110.25.114.xip.io:81"
+  "etcdEndpoints":"47.105.66.205:2379"
 }
