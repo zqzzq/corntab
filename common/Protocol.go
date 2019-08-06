@@ -3,6 +3,8 @@ package common
 import (
 	"encoding/json"
 	"strings"
+	"github.com/gorhill/cronexpr"
+	"time"
 )
 
 type Job struct {
@@ -20,6 +22,12 @@ type Response struct {
 type JobEvent struct {
 	EventType int `json:"eventType"` //delete:1 put:0
 	JobInfo *Job `json:"jobInfo"`
+}
+
+type JobSchedulePlan struct {
+	Job *Job `json:"job"`
+	Expr *cronexpr.Expression `json:"expr"`
+	NextTime time.Time `json:"nextTime"`
 }
 
 
@@ -50,5 +58,17 @@ func BuildJobEvent(etype int, jinfo *Job) *JobEvent {
 		EventType: etype,
 		JobInfo: jinfo,
 	}
+}
 
+func BuildJobSchedulePlan(j *Job) (jsp *JobSchedulePlan, err error) {
+	expr, err := cronexpr.Parse(j.CronExpr)
+	if err != nil {
+		return
+	}
+
+	return &JobSchedulePlan{
+		Job: j,
+		Expr: expr,
+		NextTime: expr.Next(time.Now()),
+	}, nil
 }

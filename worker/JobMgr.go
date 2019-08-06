@@ -56,8 +56,8 @@ func (jobMgr *JobMgr) WatchJobs() (err error) {
 	for _, kv := range getResp.Kvs{
 		if job, err := common.UnPackJob(kv.Value);err == nil{
 			event := common.BuildJobEvent(common.JOB_ENEVT_SAVE, job)
-			//todo:把这个事件给调度器
-			fmt.Println(event)
+			fmt.Println("推送已有任务事件：", event)
+			S_scheduler.PushJobEvent(event)
 		}
 	}
 	go func() {
@@ -73,10 +73,10 @@ func (jobMgr *JobMgr) WatchJobs() (err error) {
 						event = common.BuildJobEvent(common.JOB_ENEVT_SAVE, j)
 					}
 				case mvccpb.DELETE:
-					event = common.BuildJobEvent(common.JOB_ENEVT_DELETE, &common.Job{Name: string(wEvent.Kv.Key)})
+					event = common.BuildJobEvent(common.JOB_ENEVT_DELETE, &common.Job{Name: common.GetJobName(string(wEvent.Kv.Key))})
 				}
-				fmt.Println(event)
-				//TODO 将事件推送给调度器
+				fmt.Println("监听到事件：", event)
+				S_scheduler.PushJobEvent(event)
 			}
 		}
 	}()
