@@ -9,22 +9,36 @@ import (
 type Scheduler struct {
 	jobEventChan chan *common.JobEvent
 	jobPlanTable map[string]*common.JobSchedulePlan//任务调度计划表
+	jobExecTable map[string] *common.JobExecInfo//任务执行计划表
 }
 
 var (
 	S_scheduler *Scheduler
 )
+
+func (s *Scheduler) tryExecJob(jsp *common.JobSchedulePlan)  {
+	if _, isExec := s.jobExecTable[jsp.Job.Name]; isExec{//正在执行
+	fmt.Println("执行尚未完成:", jsp.Job.Name)
+		return
+	}
+
+	jobExecInfo := common.BuildJobExecInfo(jsp)
+	s.jobExecTable[jsp.Job.Name] = jobExecInfo
+	fmt.Println("开始执行任务", jobExecInfo.Job.Name, jobExecInfo.ScheduleTime,jobExecInfo.ExecTime)
+	S_executor.ExecuteJob(jobExecInfo)
+
+}
+
 //执行到期任务并获取距离最近的下次执行时间
 func (s *Scheduler) trySchedule() (scheduleAfter time.Duration) {
 	if len(s.jobPlanTable)==0 {
-		return
+		return time.Second
 	}
 	var nearScheduleTime *time.Time
 	now := time.Now()
 	for _, jsp := range s.jobPlanTable{
 		if jsp.NextTime.Before(now) || jsp.NextTime.Equal(now){
-			//todo 任务过期 立即尝试执行任务
-			fmt.Println("尝试执行任务", jsp.Job)
+			S_scheduler.tryExecJob(jsp)
 			jsp.NextTime = jsp.Expr.Next(now)
 		}
 		if nearScheduleTime == nil || jsp.NextTime.Before(*nearScheduleTime){
@@ -74,6 +88,7 @@ func InitScheduler() (err error) {
 	s := &Scheduler{
 		jobEventChan: make(chan *common.JobEvent, 1000),
 		jobPlanTable: make(map[string]*common.JobSchedulePlan),
+		jobExecTable: make(map[string]*common.JobExecInfo),
 	}
 	S_scheduler = s
 	//启动协程开始调度循环

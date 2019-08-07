@@ -30,6 +30,12 @@ type JobSchedulePlan struct {
 	NextTime time.Time `json:"nextTime"`
 }
 
+type JobExecInfo struct {
+	Job *Job
+	ScheduleTime time.Time
+	ExecTime time.Time
+}
+
 
 func BuildResponse(respNum int, msg string, data interface{}) (resp []byte, err error) {
 	r := Response{
@@ -57,6 +63,14 @@ func BuildJobEvent(etype int, jinfo *Job) *JobEvent {
 	return &JobEvent{
 		EventType: etype,
 		JobInfo: jinfo,
+	}
+}
+
+func BuildJobExecInfo(jsp *JobSchedulePlan) *JobExecInfo {
+	return &JobExecInfo{
+		Job: jsp.Job,
+		ScheduleTime: jsp.NextTime,
+		ExecTime: time.Now(),
 	}
 }
 
