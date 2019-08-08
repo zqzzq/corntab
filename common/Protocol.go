@@ -36,6 +36,15 @@ type JobExecInfo struct {
 	ExecTime time.Time
 }
 
+type JobExecResult struct {
+	Info *JobExecInfo
+	Output string
+	Err error
+	StartTime time.Time
+	EndTime time.Time
+}
+
+
 
 func BuildResponse(respNum int, msg string, data interface{}) (resp []byte, err error) {
 	r := Response{
@@ -74,6 +83,16 @@ func BuildJobExecInfo(jsp *JobSchedulePlan) *JobExecInfo {
 	}
 }
 
+func BuildJobExecResult(info *JobExecInfo, output string, err error, startTime, endTime time.Time) *JobExecResult {
+	return &JobExecResult{
+		Info: info,
+		Output: output,
+		Err: err,
+		StartTime: startTime,
+		EndTime: endTime,
+	}
+}
+
 func BuildJobSchedulePlan(j *Job) (jsp *JobSchedulePlan, err error) {
 	expr, err := cronexpr.Parse(j.CronExpr)
 	if err != nil {
@@ -86,3 +105,4 @@ func BuildJobSchedulePlan(j *Job) (jsp *JobSchedulePlan, err error) {
 		NextTime: expr.Next(time.Now()),
 	}, nil
 }
+

@@ -10,6 +10,7 @@ type Scheduler struct {
 	jobEventChan chan *common.JobEvent
 	jobPlanTable map[string]*common.JobSchedulePlan//任务调度计划表
 	jobExecTable map[string] *common.JobExecInfo//任务执行计划表
+	jobExecResultChan chan *common.JobExecResult
 }
 
 var (
@@ -77,6 +78,8 @@ func (s *Scheduler) scheduleLoop()  {
 			if err := s.handleJobEvent(jobEvent);err != nil{
 				continue
 			}
+		case jer := <- s.jobExecResultChan:
+			s.handJobExecResult(jer)
 		case <- delayTime.C:
 		}
 		scheduleAfter = s.trySchedule()
@@ -89,11 +92,17 @@ func InitScheduler() (err error) {
 		jobEventChan: make(chan *common.JobEvent, 1000),
 		jobPlanTable: make(map[string]*common.JobSchedulePlan),
 		jobExecTable: make(map[string]*common.JobExecInfo),
+		jobExecResultChan: make(chan *common.JobExecResult, 1000),
 	}
 	S_scheduler = s
 	//启动协程开始调度循环
 	go S_scheduler.scheduleLoop()
 	return
+}
+
+func (s *Scheduler) handJobExecResult(jer *common.JobExecResult)  {
+	delete(s.jobExecTable, jer.Info.Job.Name)
+	fmt.Println("处理执行结果：", *jer)
 }
 
 func (s *Scheduler) PushJobEvent(e *common.JobEvent)  {
