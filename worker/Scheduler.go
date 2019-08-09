@@ -61,6 +61,11 @@ func (s *Scheduler) handleJobEvent( e *common.JobEvent ) (err error) {
 		if _, isExist := s.jobPlanTable[e.JobInfo.Name]; isExist{
 			delete(s.jobPlanTable, e.JobInfo.Name)
 		}
+	case common.JOB_ENEVT_KILL:
+		if execInfo, isExec := s.jobExecTable[e.JobInfo.Name]; isExec{
+			execInfo.Cancel()
+		}
+
 
 	}
 	return

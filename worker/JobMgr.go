@@ -43,6 +43,7 @@ func InitJobMgr() (err error) {
 	if err = S_jobMgr.WatchJobs();err != nil{
 		return
 	}
+	S_jobMgr.WatchKill()
 	return
 }
 //监视任务变化
@@ -82,3 +83,34 @@ func (jobMgr *JobMgr) WatchJobs() (err error) {
 	}()
 	return
 }
+
+func (jobMgr *JobMgr) WatchKill(){
+	go func() {
+		//从当前版本开始监听
+		wchan := S_jobMgr.watcher.Watch(context.TODO(), common.JOB_KILL_DIR, clientv3.WithPrefix())
+		for wresp := range wchan{
+			for _, wEvent := range wresp.Events{
+				event := &common.JobEvent{}
+				switch wEvent.Type{
+				case mvccpb.PUT:
+					killJobName := common.GetKillName(string(wEvent.Kv.Key))
+					event.EventType = common.JOB_ENEVT_KILL
+					event.JobInfo = &common.Job{Name: killJobName}
+					fmt.Println("监听到杀死事件：", event)
+					S_scheduler.PushJobEvent(event)
+				case mvccpb.DELETE:
+				}
+			}
+		}
+	}()
+}
+
+func (jobMgr *JobMgr) getJobLock(jobName string) *JobLock {
+	return &JobLock{
+		kv: jobMgr.Kv,
+		lease: jobMgr.Lease,
+		jobName: jobName,
+	}
+}
+
+

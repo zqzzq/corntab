@@ -5,6 +5,7 @@ import (
 	"strings"
 	"github.com/gorhill/cronexpr"
 	"time"
+	"context"
 )
 
 type Job struct {
@@ -34,6 +35,8 @@ type JobExecInfo struct {
 	Job *Job
 	ScheduleTime time.Time
 	ExecTime time.Time
+	Ctx context.Context
+	Cancel context.CancelFunc
 }
 
 type JobExecResult struct {
@@ -68,6 +71,10 @@ func GetJobName(key string) string {
 	return strings.TrimPrefix(key, JOB_SAVE_DIR)
 }
 
+func GetKillName(key string) string {
+	return strings.TrimPrefix(key, JOB_KILL_DIR)
+}
+
 func BuildJobEvent(etype int, jinfo *Job) *JobEvent {
 	return &JobEvent{
 		EventType: etype,
@@ -76,10 +83,13 @@ func BuildJobEvent(etype int, jinfo *Job) *JobEvent {
 }
 
 func BuildJobExecInfo(jsp *JobSchedulePlan) *JobExecInfo {
+	ctx, cancel := context.WithCancel(context.TODO())
 	return &JobExecInfo{
 		Job: jsp.Job,
 		ScheduleTime: jsp.NextTime,
 		ExecTime: time.Now(),
+		Ctx: ctx,
+		Cancel: cancel,
 	}
 }
 
