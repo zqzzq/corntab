@@ -33,8 +33,8 @@ type JobSchedulePlan struct {
 
 type JobExecInfo struct {
 	Job *Job
+	PlanTime time.Time
 	ScheduleTime time.Time
-	ExecTime time.Time
 	Ctx context.Context
 	Cancel context.CancelFunc
 }
@@ -47,7 +47,20 @@ type JobExecResult struct {
 	EndTime time.Time
 }
 
+type JobLog struct {
+	JobName string `bson:"jobName"`
+	Command string `bson:"command"`
+	Err error `bson:"err"`
+	OutPut string `bson:"outPut"`
+	PlanTime time.Time `bson:"planTime"`
+	ScheduleTime time.Time `bson:"scheduleTime"`
+	StartTime time.Time `bson:"startTime"`
+	EndTime time.Time `bson:"endTime"`
+}
 
+type JobLogBatch struct {
+	JobLogs []interface{}
+}
 
 func BuildResponse(respNum int, msg string, data interface{}) (resp []byte, err error) {
 	r := Response{
@@ -86,8 +99,8 @@ func BuildJobExecInfo(jsp *JobSchedulePlan) *JobExecInfo {
 	ctx, cancel := context.WithCancel(context.TODO())
 	return &JobExecInfo{
 		Job: jsp.Job,
-		ScheduleTime: jsp.NextTime,
-		ExecTime: time.Now(),
+		PlanTime: jsp.NextTime,
+		ScheduleTime: time.Now(),
 		Ctx: ctx,
 		Cancel: cancel,
 	}

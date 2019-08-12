@@ -25,7 +25,7 @@ func (s *Scheduler) tryExecJob(jsp *common.JobSchedulePlan)  {
 
 	jobExecInfo := common.BuildJobExecInfo(jsp)
 	s.jobExecTable[jsp.Job.Name] = jobExecInfo
-	fmt.Println("开始执行任务", jobExecInfo.Job.Name, jobExecInfo.ScheduleTime,jobExecInfo.ExecTime)
+	fmt.Println("开始执行任务", jobExecInfo.Job.Name, jobExecInfo.PlanTime,jobExecInfo.ScheduleTime)
 	S_executor.ExecuteJob(jobExecInfo)
 
 }
@@ -107,6 +107,19 @@ func InitScheduler() (err error) {
 
 func (s *Scheduler) handJobExecResult(jer *common.JobExecResult)  {
 	delete(s.jobExecTable, jer.Info.Job.Name)
+	if jer.Err != common.LOCK_ALREADY_USED{
+		jobLog := &common.JobLog{
+			JobName: jer.Info.Job.Name,
+			Command: jer.Info.Job.Command,
+			Err: jer.Err,
+			OutPut: jer.Output,
+			PlanTime: jer.Info.PlanTime,
+			ScheduleTime: jer.Info.ScheduleTime,
+			StartTime: jer.StartTime,
+			EndTime: jer.EndTime,
+		}
+	}
+
 	fmt.Println("处理执行结果：", *jer)
 }
 

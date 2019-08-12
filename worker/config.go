@@ -14,6 +14,9 @@ var (
 type Config struct {
 	EtcdDialTimeout int `json:"etcdDialTimeout"`
 	EtcdEndpoints string `json:"etcdEndpoints"`
+	MongodbUrl string `json:"mongodbUrl"`
+	MongodbTimeout int `json:"mongodbTimeout"`
+	JobLogBatchSize int `json:"jobLogBatchSize"`
 }
 
 //加载配置

@@ -30,6 +30,11 @@ func main()  {
 		fmt.Println(err)
 		return
 	}
+	//初始化日志收集
+	if err := worker.InitLogSink();err != nil{
+		fmt.Println(err)
+		return
+	}
 	//初始化任务执行器
 	worker.InitExecutor()
 	//初始化任务调度器
