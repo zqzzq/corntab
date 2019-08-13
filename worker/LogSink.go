@@ -6,6 +6,7 @@ import (
 	"time"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"context"
+	"fmt"
 )
 
 type LogSink struct {
@@ -19,12 +20,15 @@ var (
 )
 
 func (logSink *LogSink) saveLog(batch *common.JobLogBatch)  {
-	logSink.Collection.InsertMany(context.TODO(), batch.JobLogs)
+	if _, err :=  logSink.Collection.InsertMany(context.TODO(), batch.JobLogs);err != nil{
+		fmt.Println("写日志到MongoDB错误：",err)
+	}
 }
 
 func (logSink *LogSink) logWriteLoop()  {
 	var log *common.JobLog
 	var jobLogBatch *common.JobLogBatch
+	logCommitTimer := time.NewTimer(time.Duration(S_config.LogCommitTime) * time.Second)
 	for {
 		select {
 		case log =<- logSink.LogChan:
@@ -34,11 +38,21 @@ func (logSink *LogSink) logWriteLoop()  {
 			jobLogBatch.JobLogs = append(jobLogBatch.JobLogs, log)
 			if len(jobLogBatch.JobLogs) >= S_config.JobLogBatchSize{
 				S_logSink.saveLog(jobLogBatch)
+				jobLogBatch = nil
 			}
-
+		case <- logCommitTimer.C:
+			if jobLogBatch != nil && len(jobLogBatch.JobLogs) != 0 {
+				S_logSink.saveLog(jobLogBatch)
+				jobLogBatch = nil
+			}
+			logCommitTimer = time.NewTimer(time.Duration(S_config.LogCommitTime) * time.Second)
 
 		}
 	}
+}
+
+func (logSink *LogSink)AppendJobLog(log *common.JobLog)  {
+	logSink.LogChan <- log
 }
 
 func InitLogSink() (err error) {

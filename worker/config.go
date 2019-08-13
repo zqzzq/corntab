@@ -17,6 +17,7 @@ type Config struct {
 	MongodbUrl string `json:"mongodbUrl"`
 	MongodbTimeout int `json:"mongodbTimeout"`
 	JobLogBatchSize int `json:"jobLogBatchSize"`
+	LogCommitTime int `json:"logCommitTime"`
 }
 
 //加载配置

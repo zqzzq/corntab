@@ -3,6 +3,7 @@
   "etcdEndpoints":"47.105.66.205:2379",
   "mongodbTimeout":5,
   "mongodbUrl":"mongodb://47.105.66.205:27017",
-  "jobLogBatchSize":100
+  "jobLogBatchSize":100,
+  "logCommitTime":1
 
 }

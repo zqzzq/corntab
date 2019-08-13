@@ -50,7 +50,7 @@ type JobExecResult struct {
 type JobLog struct {
 	JobName string `bson:"jobName"`
 	Command string `bson:"command"`
-	Err error `bson:"err"`
+	Err string `bson:"err"`
 	OutPut string `bson:"outPut"`
 	PlanTime time.Time `bson:"planTime"`
 	ScheduleTime time.Time `bson:"scheduleTime"`
