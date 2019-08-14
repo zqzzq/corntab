@@ -111,12 +111,16 @@ func (s *Scheduler) handJobExecResult(jer *common.JobExecResult)  {
 		jobLog := &common.JobLog{
 			JobName: jer.Info.Job.Name,
 			Command: jer.Info.Job.Command,
-			Err: jer.Err.Error(),
 			OutPut: jer.Output,
 			PlanTime: jer.Info.PlanTime,
 			ScheduleTime: jer.Info.ScheduleTime,
 			StartTime: jer.StartTime,
 			EndTime: jer.EndTime,
+		}
+		if jer.Err == nil{
+			jobLog.Err = ""
+		}else {
+			jobLog.Err = jer.Err.Error()
 		}
 		S_logSink.AppendJobLog(jobLog)
 		fmt.Println("处理执行结果：", jobLog)
