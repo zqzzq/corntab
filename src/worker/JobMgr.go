@@ -3,7 +3,7 @@ package worker
 import (
 	"go.etcd.io/etcd/clientv3"
 	"time"
-	"corntab/common"
+	"corntab/src/common"
 	"context"
 	"go.etcd.io/etcd/mvcc/mvccpb"
 	"fmt"

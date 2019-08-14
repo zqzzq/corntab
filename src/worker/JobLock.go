@@ -3,7 +3,7 @@ package worker
 import (
 	"go.etcd.io/etcd/clientv3"
 	"context"
-	"corntab/common"
+	"corntab/src/common"
 )
 
 type JobLock struct {

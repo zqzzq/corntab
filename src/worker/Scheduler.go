@@ -1,7 +1,7 @@
 package worker
 
 import (
-	"corntab/common"
+	"corntab/src/common"
 	"time"
 	"fmt"
 )

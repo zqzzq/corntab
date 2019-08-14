@@ -2,11 +2,12 @@ package worker
 
 import (
 	"go.mongodb.org/mongo-driver/mongo"
-	"corntab/common"
+	"corntab/src/common"
 	"time"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"context"
 	"fmt"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 type LogSink struct {
@@ -59,6 +60,11 @@ func InitLogSink() (err error) {
 	ctx, _ := context.WithTimeout(context.Background(), time.Duration(S_config.MongodbTimeout)*time.Second)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(S_config.MongodbUrl))
 	if err != nil{
+		fmt.Println("创建MongoDB client失败：", err)
+		return
+	}
+	if err = client.Ping(ctx, readpref.Primary()); err != nil{
+		fmt.Println("连接MongoDB失败：", err)
 		return
 	}
 	S_logSink = &LogSink{

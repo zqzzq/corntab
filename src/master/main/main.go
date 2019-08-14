@@ -2,16 +2,16 @@ package main
 
 import (
 	"runtime"
-	"corntab/master"
 	"fmt"
 	"flag"
+	"corntab/src/master"
 )
 
 var confPath string
 
 func initArgs()  {
 	//master -config ./master.json
-	flag.StringVar(&confPath, "config", "master/main/master.json", "指定master.json")
+	flag.StringVar(&confPath, "config", "src/master/main/master.json", "指定master.json")
 	flag.Parsed()
 }
 

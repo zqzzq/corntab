@@ -4,15 +4,15 @@ import (
 	"runtime"
 	"fmt"
 	"flag"
-	"corntab/worker"
 	"time"
+	"corntab/src/worker"
 )
 
 var confPath string
 
 func initArgs()  {
 	//worker -config ./worker.json
-	flag.StringVar(&confPath, "config", "worker/main/worker.json", "指定worker.json")
+	flag.StringVar(&confPath, "config", "src/worker/main/worker.json", "指定worker.json")
 	flag.Parsed()
 }
 
@@ -32,7 +32,6 @@ func main()  {
 	}
 	//初始化日志收集
 	if err := worker.InitLogSink();err != nil{
-		fmt.Println(err)
 		return
 	}
 	//初始化任务执行器

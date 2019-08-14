@@ -3,7 +3,7 @@ package master
 import (
 	"go.etcd.io/etcd/clientv3"
 	"time"
-	"corntab/common"
+	"corntab/src/common"
 	"encoding/json"
 	"context"
 	"fmt"
