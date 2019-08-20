@@ -15,7 +15,7 @@ type ApiServer struct {
 	httpServer *http.Server
 }
 //任务保存方法
-//post job={"name":"job1","command":"echo hello","cronExpr":"* * * * *"}
+//post job={"name":"job1","command":"echo hello","executorAddr":"localhost:9091","cronExpr":"* * * * *"}
 func handleJobSave(resp http.ResponseWriter, req *http.Request)  {
 	fmt.Println("开始处理job保存")
 	if err := req.ParseForm();err != nil{

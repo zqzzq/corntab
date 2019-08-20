@@ -11,6 +11,7 @@ import (
 type Job struct {
 	Name string `json:"name"`
 	Command string `json:"command"`
+	ExecutorAddr string `json:"executorAddr"`
 	CronExpr string `json:"cronExpr"`
 }
 
