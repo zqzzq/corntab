@@ -2,8 +2,11 @@ package worker
 
 import (
 	"corntab/src/common"
-	"os/exec"
 	"time"
+	"google.golang.org/grpc"
+	"fmt"
+	"corntab/src/worker/pb"
+	"errors"
 )
 
 type Executor struct {
@@ -22,13 +25,27 @@ func (e *Executor)ExecuteJob(info *common.JobExecInfo) {
 			endTime time.Time
 			output []byte
 			err error
+			conn *grpc.ClientConn
+			resp *pb.ExecuteResponse
 		)
 		jobLock := S_jobMgr.getJobLock(info.Job.Name)
 		if err = jobLock.tryLock();err == nil{//上锁成功
-			cmd := exec.CommandContext(info.Ctx, "/bin/bash", "-c", info.Job.Command)
-			startTime = time.Now()
-			output, err = cmd.CombinedOutput()
-			endTime = time.Now()
+			conn, err = grpc.Dial(info.Job.ExecutorAddr ,grpc.WithInsecure())
+			defer conn.Close()
+			if err == nil {
+				c := pb.NewExecuteServiceClient(conn)
+				startTime = time.Now()
+				resp, err = c.Execute(info.Ctx, &pb.ExecuteRequest{Params: info.Job.Params})
+				endTime = time.Now()
+				if err == nil{
+					err = errors.New(resp.Err)
+				}else {
+					fmt.Println("执行失败：", err)
+				}
+			}else {
+				fmt.Println("Can't connect to executor: ", err)
+			}
+
 		}
 		jer := common.BuildJobExecResult(info, string(output), err, startTime, endTime)
 		S_scheduler.jobExecResultChan <- jer

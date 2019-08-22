@@ -3,12 +3,13 @@ package pb;
 
 
 message ExecuteRequest {
-    string param = 1;
+    string params = 1;
 }
 
 
 message ExecuteResponse {
-    string result = 1;
+    string output = 1;
+    string err = 2;
 }
 
 

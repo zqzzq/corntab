@@ -110,7 +110,7 @@ func (s *Scheduler) handJobExecResult(jer *common.JobExecResult)  {
 	if jer.Err != common.LOCK_ALREADY_USED{
 		jobLog := &common.JobLog{
 			JobName: jer.Info.Job.Name,
-			Command: jer.Info.Job.Command,
+			Params: jer.Info.Job.Params,
 			OutPut: jer.Output,
 			PlanTime: jer.Info.PlanTime,
 			ScheduleTime: jer.Info.ScheduleTime,

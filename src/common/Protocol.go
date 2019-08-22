@@ -10,7 +10,7 @@ import (
 
 type Job struct {
 	Name string `json:"name"`
-	Command string `json:"command"`
+	Params string `json:"params"`
 	ExecutorAddr string `json:"executorAddr"`
 	CronExpr string `json:"cronExpr"`
 }
@@ -50,7 +50,7 @@ type JobExecResult struct {
 
 type JobLog struct {
 	JobName string `bson:"jobName"`
-	Command string `bson:"command"`
+	Params string `bson:"params"`
 	Err string `bson:"err"`
 	OutPut string `bson:"outPut"`
 	PlanTime time.Time `bson:"planTime"`
