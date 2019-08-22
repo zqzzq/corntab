@@ -1,0 +1,18 @@
+syntax = "proto3";
+package pb;
+
+
+message ExecuteRequest {
+    string params = 1;
+}
+
+
+message ExecuteResponse {
+    string output = 1;
+    string err = 2;
+}
+
+
+service ExecuteService {
+    rpc execute (ExecuteRequest) returns (ExecuteResponse){}
+}
