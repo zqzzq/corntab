@@ -17,6 +17,8 @@ type Config struct {
 	ApiWriteTimeout int `json:"apiWriteTimeout"`
 	EtcdDialTimeout int `json:"etcdDialTimeout"`
 	EtcdEndpoints string `json:"etcdEndpoints"`
+	MongodbUrl string `json:"mongodbUrl"`
+	MongodbTimeout int `json:"mongodbTimeout"`
 }
 
 //加载配置

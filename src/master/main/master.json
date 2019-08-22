@@ -3,5 +3,7 @@
   "apiReadTimeout":5000,
   "apiWriteTimeout":5000,
   "etcdDialTimeout":5000,
-  "etcdEndpoints":"47.105.66.205:2379"
+  "etcdEndpoints":"47.105.66.205:2379",
+  "mongodbTimeout":5,
+  "mongodbUrl":"mongodb://47.105.66.205:27017"
 }

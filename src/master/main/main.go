@@ -34,6 +34,11 @@ func main()  {
 		fmt.Println(err)
 		return
 	}
+	//初始化日志管理器
+	if err := master.InitLogSink();err != nil{
+		fmt.Println(err)
+		return
+	}
 
 	//启动HTTP服务
 	if err := master.InitApiServer();err != nil{

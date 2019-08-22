@@ -6,7 +6,6 @@ import (
 	"google.golang.org/grpc"
 	"fmt"
 	"corntab/src/worker/pb"
-	"errors"
 )
 
 type Executor struct {
@@ -23,7 +22,6 @@ func (e *Executor)ExecuteJob(info *common.JobExecInfo) {
 		var (
 			startTime time.Time
 			endTime time.Time
-			output []byte
 			err error
 			conn *grpc.ClientConn
 			resp *pb.ExecuteResponse
@@ -31,23 +29,24 @@ func (e *Executor)ExecuteJob(info *common.JobExecInfo) {
 		jobLock := S_jobMgr.getJobLock(info.Job.Name)
 		if err = jobLock.tryLock();err == nil{//上锁成功
 			conn, err = grpc.Dial(info.Job.ExecutorAddr ,grpc.WithInsecure())
+
 			defer conn.Close()
 			if err == nil {
 				c := pb.NewExecuteServiceClient(conn)
 				startTime = time.Now()
 				resp, err = c.Execute(info.Ctx, &pb.ExecuteRequest{Params: info.Job.Params})
 				endTime = time.Now()
-				if err == nil{
-					err = errors.New(resp.Err)
-				}else {
+				if err != nil {
 					fmt.Println("执行失败：", err)
 				}
 			}else {
 				fmt.Println("Can't connect to executor: ", err)
 			}
-
 		}
-		jer := common.BuildJobExecResult(info, string(output), err, startTime, endTime)
+		if resp == nil{
+			resp = &pb.ExecuteResponse{Output: ""}
+		}
+		jer := common.BuildJobExecResult(info, resp.Output, err, startTime, endTime)
 		S_scheduler.jobExecResultChan <- jer
 		jobLock.unLock()
 	}()

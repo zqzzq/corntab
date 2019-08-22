@@ -69,8 +69,8 @@ func BuildResponse(respNum int, msg string, data interface{}) (resp []byte, err 
 		Msg: msg,
 		Data: data,
 	}
-	resp, err = json.Marshal(r)
-	return
+	return json.Marshal(r)
+
 }
 
 func UnPackJob(b []byte) (job *Job, err error) {

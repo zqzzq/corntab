@@ -1,16 +1,17 @@
 package main
 
 import (
-	"test/rpc/pb"
+
 	"context"
 	"net"
 	"log"
 	"google.golang.org/grpc"
 	"fmt"
+	"corntab/src/samples/pb"
 )
 
 const (
-	port = ":50053"
+	port = ":50052"
 )
 
 
@@ -19,8 +20,8 @@ type ExecuteServiceServer struct {
 
 func (ess *ExecuteServiceServer) Execute(ctx context.Context, req *pb.ExecuteRequest) (*pb.ExecuteResponse, error) {
 
-	fmt.Println("hello world")
-	return &pb.ExecuteResponse{Result:"success"}, nil
+	fmt.Println("hello ", req.Params)
+	return &pb.ExecuteResponse{Output:"success"},nil
 }
 
 func main() {

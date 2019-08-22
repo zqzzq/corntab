@@ -19,10 +19,11 @@ type ApiServer struct {
 func handleJobSave(resp http.ResponseWriter, req *http.Request)  {
 	fmt.Println("开始处理job保存")
 	if err := req.ParseForm();err != nil{
-		fmt.Println(err)
+		fmt.Println("解析表单错误：",err)
 		return
 	}
 	postJob := req.PostForm.Get("job")
+	fmt.Println(postJob)
 	var job common.Job
 	if err :=  json.Unmarshal([]byte(postJob), &job);err !=nil{
 		fmt.Println(err)
@@ -83,7 +84,7 @@ func handleJobList(resp http.ResponseWriter, req *http.Request)  {
 	resp.Write(by)
 }
 //杀死任务
-//GET /jobs/kill?name=job1
+//GET /job/kill?name=job1
 func handleJobKill(resp http.ResponseWriter, req *http.Request)  {
 	urlParam := req.URL.Query()
 	jobName := urlParam.Get("name")
@@ -102,6 +103,24 @@ func handleJobKill(resp http.ResponseWriter, req *http.Request)  {
 
 	resp.Write(by)
 }
+//获取任务日志
+//GET /job/logs?name=job1
+func handleJoblogs(resp http.ResponseWriter, req *http.Request)  {
+	urlParam := req.URL.Query()
+	jobName := urlParam.Get("name")
+	fmt.Println("获取job日志 ：", jobName)
+	logList, err := S_logSink.GetJobLogs(jobName)
+	if err != nil{
+		return
+	}
+	by, err := common.BuildResponse(0, "success", logList)
+	if err != nil{
+		fmt.Println(err)
+		return
+	}
+
+	resp.Write(by)
+}
 
 //初始化服务
 func InitApiServer() (err error) {
@@ -111,6 +130,7 @@ func InitApiServer() (err error) {
 	mux.HandleFunc("/job/delete", handleJobDelete)
 	mux.HandleFunc("/job/list", handleJobList)
 	mux.HandleFunc("/job/kill", handleJobKill)
+	mux.HandleFunc("/job/logs", handleJoblogs)
 
 	lis, err := net.Listen("tcp", ":" + strconv.Itoa(S_config.ApiPort))
 	if err != nil{

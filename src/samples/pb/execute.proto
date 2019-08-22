@@ -9,7 +9,6 @@ message ExecuteRequest {
 
 message ExecuteResponse {
     string output = 1;
-    string err = 2;
 }
 
 
