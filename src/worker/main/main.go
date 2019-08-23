@@ -13,7 +13,7 @@ var confPath string
 func initArgs()  {
 	//worker -config ./worker.json
 	flag.StringVar(&confPath, "config", "src/worker/main/worker.json", "指定worker.json")
-	flag.Parsed()
+	flag.Parse()
 }
 
 func initEnv()  {

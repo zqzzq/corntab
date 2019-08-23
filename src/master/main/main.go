@@ -12,7 +12,7 @@ var confPath string
 func initArgs()  {
 	//master -config ./master.json
 	flag.StringVar(&confPath, "config", "src/master/main/master.json", "指定master.json")
-	flag.Parsed()
+	flag.Parse()
 }
 
 func initEnv()  {
